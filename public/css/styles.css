@@ -1,0 +1,131 @@
+/*Order form */
+.border{
+    border: 1px solid #000 !important;
+}
+.purchaseOrderCard{
+background:#fff;
+font-size:13px;
+border:1px solid #000;
+}
+.purchaseOrderCard>div{
+    margin:5px;
+}
+.purchaseOrderH4{
+    font-weight:900;
+    text-transform: uppercase;
+    margin:10px;
+    letter-spacing: 5px;
+    width: 100%;
+}
+.purchaseNumber, .generatedPurchaseNumber{
+    margin:10px;
+    font-weight:900;
+    font-size:18px;
+    letter-spacing: 3px;
+}
+.purchaseDate{
+    float:right;
+    margin-right:10px;
+}
+.customer{
+    background:#f9f9f9;
+}
+.customer span, .supplier span, .commercialConditions span, .invoiceAddress span{
+    font-weight:900;
+    line-height: 35px;
+    font-size:14px;
+}
+ .supplier ul, .customer ul{
+    border-top:1px dashed #000;
+    padding-top:7px
+}
+
+.commercialConditions ul, .invoiceAddress ul{
+    border-top:1px solid #000;
+    padding-top:7px
+}
+
+.orderedProducts{
+padding-top:10px;
+}
+
+.orderedProducts table{
+    width:100%;
+    border: 1px solid black;
+    border-collapse: collapse;
+}
+.orderedProducts table th{
+    border: 1px solid black;
+    text-align:center;
+}
+.orderedProducts table td{
+    border: 1px solid black;
+    text-align:center;
+}
+.orderTotal{
+    margin-top:15px;
+}
+.orderTotal p{
+    width:100%;
+    text-align: right;
+    font-size:18px;
+    font-weight:900;
+    line-height: 12px;
+    letter-spacing: 2px;
+
+}
+
+.selectCustomer{
+    width:500px;
+}
+
+.btn-sm{
+    padding:0px 4px;
+    cursor: pointer;
+
+}
+
+/*create purchase order*/
+.disabled-input{
+    width:100%;
+    border:none;
+
+}
+.quantity{
+width:100%;
+text-align:center;
+border:none;
+}
+
+.orderSum{
+    text-align:right;
+    font-size:18px;
+    font-weight:900;
+}
+.orderSum input{
+    font-weight:900;
+}
+.orderSubTotal, .orderVat, .orderTotalWithVat{
+    border:none;
+    text-align:right;
+    margin-right:5px;
+}
+
+/* Products*/
+
+.changePriceValue{
+
+    text-align:right;
+    width:45px;
+    background:none;
+    border:none;
+    border-bottom:1px dashed #000;
+    text-align: center;
+}
+
+/* create purchase order */
+
+ul.customerData li, ul.supplierData li{
+    font-size: 14px;
+    line-height:20px;
+}
