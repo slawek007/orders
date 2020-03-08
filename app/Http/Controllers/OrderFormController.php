@@ -44,7 +44,7 @@ class OrderFormController extends Controller
      */
     public function store(Request $request)
     {
-        dd('order form store');
+        dd($request);
     }
 
     /**

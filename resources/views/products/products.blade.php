@@ -14,7 +14,6 @@
 
             </div>
         </div>
-        {{--dd(Cookie::get('order')) --}}
     @if ($order)
         <div class="row">
             <div class="col-md-6">

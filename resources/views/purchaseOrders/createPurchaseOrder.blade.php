@@ -5,7 +5,8 @@
 @endsection
 
 @section('formStart')
-<form id="order-form" action="#">
+<form id="order-form" action='{{ action('OrderFormController@store') }}' method='POST'>
+    @csrf;
 @endsection
 
 @section('purchaseData')
@@ -16,14 +17,12 @@
 @endsection
 
 @section('deliveryAddress')
-        <form method="GET">
             <select class="w-50" id="selectCustomer" onchange="getCustomerData(event, '{{ csrf_token() }}')">
                 <option value="0" selected>(wybierz)</option>
                 @foreach ($customers as $customer)
                 <option value="{{ $customer->id }}"><strong>{{$customer->company}},</strong> {{$customer->street}}, {{$customer->city}}</option>
                 @endforeach
               </select>
-        </form>
         <ul class="list-unstyled customerData"></ul>
 @endsection
 
@@ -54,7 +53,7 @@
             {{--NumberProduct --}}
             <td>
                 {{ $loop->iteration }}
-                <input type="hidden" class="product_id" name="product_id[{{ $loop->iteration }}]" value="{{ $loop->iteration }}">
+                <input type="hidden" class="product_id" name="product_id[{{ $loop->iteration }}]" value="{{ $product->id }}">
             </td>
             {{-- P/N --}}
             <td style="text-align:left;">
@@ -65,18 +64,15 @@
             <td style="text-align:left;">
                 {{ $product->description }}
                 @if ($product->product_types_id != '1')
-                    <form class="changePriceValueForm w-40 ps-{{ $product->id }}{{ $purchaseOrder[0]->productsSupplierWithPrice[0]->id }}" style="width:80px;">
-                        <input type="text" name="productNewPrice" class="changePriceValue priceValue-{{$loop->iteration}}" onkeyup="showSavebutton(this.form)" value="{{$product->productsSupplierWithPrice[0]->pivot->price}}">{{$product->productsSupplierWithPrice[0]->pivot->currency_extension}}/{{ $product->unit_to_buy }}
-                        <button class="changePriceValueButton btn-sm btn-success d-none" type="submit"
+                        <input type="text" name="productNewPrice[{{ $loop->iteration }}]" class="changePriceValue priceValue-{{$loop->iteration}}" onkeyup="showSavebutton(this.form)" value="{{$product->productsSupplierWithPrice[0]->pivot->price}}">{{$product->productsSupplierWithPrice[0]->pivot->currency_extension}}/{{ $product->unit_to_buy }}
+                       <span class="changePriceValueButton btn-sm btn-success d-none" type="submit"
                                 onclick="updateDatabase(
                                             event,
                                             '{{ action('ProductsController@update',$product->id)}}',
                                             '{{csrf_token()}}',
                                             '{{ $purchaseOrder[0]->productsSupplierWithPrice[0]->id }}')">
                             @lang('products.changePrice')
-                        </button>
-                    </form>
-
+                       </span>
                 @endif
                 <input type="hidden" class="description" name="description[{{ $loop->iteration }}]" value="{{ $product->description }}">
             </td>
@@ -106,7 +102,6 @@
                         {{ $product->product_types_id }},
                         {{ $loop->iteration }}
                     )});
-                    console.log('wenw');
                 </script>
                 <span class="subtotalText subtotalText-{{ $loop->iteration }}">
 
@@ -205,6 +200,7 @@
 @endsection
 
 @section('formStop')
+<button>Zapisz zamówienie</button>
     </form>
 @endsection
 
