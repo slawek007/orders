@@ -4,6 +4,34 @@ document.querySelector('.PurchaseNumberSubmit').addEventListener('click',generat
 document.querySelector('.PurchaseNumberDestroy').addEventListener('click',deleteOrderNumber);
 }
 
+//funkcja do zaokraglania
+function Round(n, k)
+{
+    var factor = Math.pow(10, k+1);
+    n = Math.round(Math.round(n*factor)/10);
+    return n/(factor/10);
+}
+
+//przeliczanie po zmianie ilości
+function calculateProductPrice(quantity, unitPrice, loop, vat) {
+    var subtotal = document.querySelector('.subtotalText-'+loop).innerText;
+    document.querySelector('.totalText-'+loop).innerText = subtotal*quantity;
+
+    var allTotal = document.querySelectorAll('.totalText');
+    var totalPrice = 0;
+
+    for (let index = 0; index < allTotal.length; index++) {
+        totalPrice = totalPrice+Number(allTotal[index].innerText);
+    }
+    document.querySelector('.orderSubTotal, .totalInput-'+loop+'').value = Round(totalPrice,2);
+    document.querySelector('.orderVat').value = Round(totalPrice*vat/100,2);
+    document.querySelector('.orderTotalWithVat').value = Round(totalPrice*(1+(vat/100)),2);
+    //document.querySelector('.totalInput-'+loop+'').value=totalPrice;
+  }
+
+
+
+
 //pobieranie danych dostawcy z bazy na podstawie listy select
 function getCustomerData(event, tokenCode){
     event.preventDefault();
@@ -57,13 +85,12 @@ function subTotalPriceCalculate(dim1, dim2, dim3, density, productTypeId, loop){
     let newPrice = document.querySelector('.priceValue-'+loop+'').value;
     let subTotal = dim1*dim2*dim3*density/1000000;
     let qty = document.querySelector('.quantity-'+loop+'').value;
-
     document.querySelector('.subtotalText-'+loop+'').innerText=subTotal*newPrice;
     document.querySelector('.totalText-'+loop+'').innerText=subTotal*newPrice*qty;
+    document.querySelector('.totalInput-'+loop+'').value=subTotal*newPrice;
 }
 
 //generowanie nr zamówienia
-
 function generateOrderNumber(){
     let tokenCode = document.querySelector('meta[name="csrf-token"]').content;
     let xhr = new XMLHttpRequest();
@@ -75,6 +102,7 @@ function generateOrderNumber(){
         {
             let dataResponse=JSON.parse(xhr.responseText);
             document.querySelector('.generatedPurchaseNumber').innerText = dataResponse.purchaseNumber[0];
+            document.querySelector('input[name="purchaseNumber"]').value = dataResponse.purchaseNumber[0];
             document.querySelector('.PurchaseNumberSubmit').setAttribute("style","display:none;");
             document.querySelector('.PurchaseNumberDestroy').setAttribute("id",dataResponse.purchaseNumber[1]);
             document.querySelector('.PurchaseNumberDestroy').setAttribute("style","display:inline-block;");
@@ -101,4 +129,33 @@ function deleteOrderNumber(){
     }
 }
 
+//zmiana ceny jednostkowej
+function changeUnitPrice(event, loop, updateProductAdress, supplierId,dim1, dim2, dim3, density, productTypeId){
+
+    let tokenCode = document.querySelector('meta[name="csrf-token"]').content;
+    var formData = event.target.parentNode;
+    let json = JSON.stringify({
+        supplierId: supplierId,
+        newPrice: formData.firstElementChild.value});
+    var xhr = new XMLHttpRequest();
+
+    xhr.open('PATCH', updateProductAdress, true);
+    xhr.setRequestHeader('X-CSRF-TOKEN', tokenCode);
+    xhr.setRequestHeader('Content-type', 'application/json; charset=utf-8');
+
+    xhr.send(json);
+    xhr.onreadystatechange = function() {
+        if(xhr.readyState == 4 && xhr.status == 200) {
+                let dataResponse=JSON.parse(xhr.responseText);
+                if (dataResponse['success']){
+                    formData.querySelector('.changePriceValueButton').classList.add('d-none');
+                    let qty=querySelector('input[name="quantity['+loop+']');
+                    subTotalPriceCalculate(dim1, dim2, dim3, density, productTypeId, loop);
+                    displayEvents('success', 'Cena ' +dataResponse['productChangedName']+ ' została zaktualizowana');
+
+
+                }
+        }
+    }
+}
 

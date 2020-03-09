@@ -11,6 +11,7 @@
 
 @section('purchaseData')
     <span class="purchaseNumber">N<sup>o</sup></span><span class="generatedPurchaseNumber">PPL/___/__/__/PO</span>
+    <input type="hidden" class="description" name="purchaseNumber" value="">
     <span class="PurchaseNumberSubmit btn btn-success">rezerwój nr zamówienia</span>
     <span class="PurchaseNumberDestroy btn btn-danger" style="display:none;">zwolnij nr zamówienia</span>
     <span class="purchaseDate">Borowa, {{ date('d-m-Y') }}</span>
@@ -63,16 +64,22 @@
             {{-- Description --}}
             <td style="text-align:left;">
                 {{ $product->description }}
-                @if ($product->product_types_id != '1')
-                        <input type="text" name="productNewPrice[{{ $loop->iteration }}]" class="changePriceValue priceValue-{{$loop->iteration}}" onkeyup="showSavebutton(this.form)" value="{{$product->productsSupplierWithPrice[0]->pivot->price}}">{{$product->productsSupplierWithPrice[0]->pivot->currency_extension}}/{{ $product->unit_to_buy }}
-                       <span class="changePriceValueButton btn-sm btn-success d-none" type="submit"
-                                onclick="updateDatabase(
+                @if ($product->product_types_id != '1')(
+                    <input type="text" name="productNewPrice[{{ $loop->iteration }}]" class="changePriceValue priceValue-{{$loop->iteration}}" onkeyup="showSavebutton(this.form)" value="{{$product->productsSupplierWithPrice[0]->pivot->price}}">{{$product->productsSupplierWithPrice[0]->pivot->currency_extension}}/{{ $product->unit_to_buy }}
+                       <span class="changePriceValueButton btn-sm btn-success d-none"
+                                onclick="changeUnitPrice(
                                             event,
+                                            '{{ $loop->iteration }}',
                                             '{{ action('ProductsController@update',$product->id)}}',
-                                            '{{csrf_token()}}',
-                                            '{{ $purchaseOrder[0]->productsSupplierWithPrice[0]->id }}')">
+                                            '{{ $purchaseOrder[0]->productsSupplierWithPrice[0]->id }}',
+                                            '{{ $product->dimension1 }}',
+                                            '{{ $product->dimension2 }}',
+                                            '{{ $product->dimension3 }}',
+                                            '{{ $product->productsMaterial->density }}',
+                                            '{{ $product->product_types_id }}'
+                                            )">
                             @lang('products.changePrice')
-                       </span>
+                       </span>)
                 @endif
                 <input type="hidden" class="description" name="description[{{ $loop->iteration }}]" value="{{ $product->description }}">
             </td>
@@ -93,18 +100,7 @@
             {{-- SubTotal --}}
             <td>
                 @if ($product->product_types_id != '1')
-                <script type="text/javascript">
-                    document.querySelector('.ps-{{ $product->id }}{{ $purchaseOrder[0]->productsSupplierWithPrice[0]->id }}').addEventListener("change", function(){subTotalPriceCalculate(
-                        {{ $product->dimension1}},
-                        {{ $product->dimension2 }},
-                        {{ $product->dimension3 }},
-                        {{ $product->productsMaterial->density }},
-                        {{ $product->product_types_id }},
-                        {{ $loop->iteration }}
-                    )});
-                </script>
                 <span class="subtotalText subtotalText-{{ $loop->iteration }}">
-
                     {{ priceCalculate(
                         $product->dimension1,
                         $product->dimension2,
@@ -115,7 +111,6 @@
                         $product->productsSupplierWithPrice[0]->pivot->price)
                     }}
                 </span>
-
                 @else
                     <span class="subtotalText subtotalText-{{ $loop->iteration }}">
                         {{ priceCalculate(
@@ -145,7 +140,7 @@
                 <span class="totalText totalText-{{ $loop->iteration }}">
                         {{ session('subtotalPrice') }}
                 </span>
-                <input type="hidden" class="total" name="total[{{ $loop->iteration }}]" value="">
+                <input type="hidden" class="totalInput-{{ $loop->iteration }}" name="total[{{ $loop->iteration }}]" value="{{ session('subtotalPrice') }}">
             <span class="currency-extension">{{ $product->productsSupplierWithPrice[0]->pivot->currency_extension }}</span>
             </td>
         </tr>
@@ -206,12 +201,13 @@
 
 @push('scripts')
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-    <script type="text/javascript" src="{{ asset('js/orderClaculate.js') }}"></script>
     <script type="text/javascript" src="{{ asset('js/createPurchaseOrder.js') }}"></script>
 
 @endpush
 @push('endSiteScripts')
-    <script type="text/javascript" src="{{ asset('js/productsSiteFunctions.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('js/productsSiteFunctions.js') }}">
+
+    </script>
 
 
 @endpush
