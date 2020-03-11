@@ -128,6 +128,11 @@ function deleteOrderNumber(){
         }
     }
 }
+//button zmiany ceny jednostkowej
+
+function showChangeButton(element) {
+    element.children[1].classList.remove('d-none');
+}
 
 //zmiana ceny jednostkowej
 function changeUnitPrice(event, loop, updateProductAdress, supplierId,dim1, dim2, dim3, density, productTypeId){
@@ -138,7 +143,6 @@ function changeUnitPrice(event, loop, updateProductAdress, supplierId,dim1, dim2
         supplierId: supplierId,
         newPrice: formData.firstElementChild.value});
     var xhr = new XMLHttpRequest();
-
     xhr.open('PATCH', updateProductAdress, true);
     xhr.setRequestHeader('X-CSRF-TOKEN', tokenCode);
     xhr.setRequestHeader('Content-type', 'application/json; charset=utf-8');
@@ -149,7 +153,6 @@ function changeUnitPrice(event, loop, updateProductAdress, supplierId,dim1, dim2
                 let dataResponse=JSON.parse(xhr.responseText);
                 if (dataResponse['success']){
                     formData.querySelector('.changePriceValueButton').classList.add('d-none');
-                    let qty=querySelector('input[name="quantity['+loop+']');
                     subTotalPriceCalculate(dim1, dim2, dim3, density, productTypeId, loop);
                     displayEvents('success', 'Cena ' +dataResponse['productChangedName']+ ' została zaktualizowana');
 

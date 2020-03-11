@@ -65,7 +65,7 @@
             <td style="text-align:left;">
                 {{ $product->description }}
                 @if ($product->product_types_id != '1')(
-                    <input type="text" name="productNewPrice[{{ $loop->iteration }}]" class="changePriceValue priceValue-{{$loop->iteration}}" onkeyup="showSavebutton(this.form)" value="{{$product->productsSupplierWithPrice[0]->pivot->price}}">{{$product->productsSupplierWithPrice[0]->pivot->currency_extension}}/{{ $product->unit_to_buy }}
+                    <input type="text" name="productNewPrice[{{ $loop->iteration }}]" class="changePriceValue priceValue-{{$loop->iteration}}" onkeyup="showChangeButton(this.parentNode)" value="{{$product->productsSupplierWithPrice[0]->pivot->price}}">{{$product->productsSupplierWithPrice[0]->pivot->currency_extension}}/{{ $product->unit_to_buy }}
                        <span class="changePriceValueButton btn-sm btn-success d-none"
                                 onclick="changeUnitPrice(
                                             event,
@@ -200,14 +200,9 @@
 @endsection
 
 @push('scripts')
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script type="text/javascript" src="{{ asset('js/createPurchaseOrder.js') }}"></script>
 
 @endpush
 @push('endSiteScripts')
-    <script type="text/javascript" src="{{ asset('js/productsSiteFunctions.js') }}">
-
-    </script>
-
 
 @endpush
