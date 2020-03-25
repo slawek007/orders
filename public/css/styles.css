@@ -105,11 +105,16 @@ border:none;
 .orderSum input{
     font-weight:900;
 }
-.orderSubTotal, .orderVat, .orderTotalWithVat{
+.orderSubTotal, .orderVat, .orderTotalWithVat, .subtotalEditableValue{
     border:none;
     text-align:right;
     margin-right:5px;
 }
+#unitSubtotal input{
+    width:75%;
+}
+
+
 
 /* Products*/
 

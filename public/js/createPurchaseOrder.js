@@ -2,6 +2,7 @@
 window.onload = function(){
 document.querySelector('.PurchaseNumberSubmit').addEventListener('click',generateOrderNumber);
 document.querySelector('.PurchaseNumberDestroy').addEventListener('click',deleteOrderNumber);
+calculateProductPriceAfterLoad();
 }
 
 //funkcja do zaokraglania
@@ -12,10 +13,33 @@ function Round(n, k)
     return n/(factor/10);
 }
 
+function limitDecimalPlaces(e) {
+      e.target.value = parseFloat(e.target.value).toFixed(2);
+
+  }
+
+
+function calculateProductPriceAfterLoad() {
+    let quantity = document.querySelectorAll('.quantity');
+    let unitPrice = document.querySelectorAll('.subtotalText');
+    let vatTax = document.querySelector('.vatTax span').innerText;
+
+    var totalPrice = 0;
+    for (let index = 1; index <= quantity.length; index++) {
+        totalPrice = Round((totalPrice+Number(unitPrice[index-1].value)),2);
+        document.querySelector('.totalText-'+index).innerHTML=Round((Number(unitPrice[index-1].value)),2).toFixed(2);
+    }
+
+    document.querySelector('.orderSubTotal').value = Round(totalPrice,2).toFixed(2);
+    document.querySelector('.orderVat').value = Round(totalPrice*vatTax/100,2).toFixed(2);
+    document.querySelector('.orderTotalWithVat').value = Round(totalPrice*(1+(vatTax/100)),2).toFixed(2);
+
+  }
+
 //przeliczanie po zmianie ilości
-function calculateProductPrice(quantity, unitPrice, loop, vat) {
-    var subtotal = document.querySelector('.subtotalText-'+loop).innerText;
-    document.querySelector('.totalText-'+loop).innerText = subtotal*quantity;
+function calculateProductPrice(quantity, unitPrice, loop, vatTax) {
+    var subtotal = document.querySelector('.subtotalText-'+loop).value;
+    document.querySelector('.totalText-'+loop).innerHTML = subtotal*quantity;
 
     var allTotal = document.querySelectorAll('.totalText');
     var totalPrice = 0;
@@ -23,10 +47,10 @@ function calculateProductPrice(quantity, unitPrice, loop, vat) {
     for (let index = 0; index < allTotal.length; index++) {
         totalPrice = totalPrice+Number(allTotal[index].innerText);
     }
-    document.querySelector('.orderSubTotal, .totalInput-'+loop+'').value = Round(totalPrice,2);
-    document.querySelector('.orderVat').value = Round(totalPrice*vat/100,2);
-    document.querySelector('.orderTotalWithVat').value = Round(totalPrice*(1+(vat/100)),2);
-    //document.querySelector('.totalInput-'+loop+'').value=totalPrice;
+    document.querySelector('.orderSubTotal').value = Round(totalPrice,2);
+    document.querySelector('.orderVat').value = Round(totalPrice*vatTax/100,2);
+    document.querySelector('.orderTotalWithVat').value = Round(totalPrice*(1+(vatTax/100)),2);
+
   }
 
 
@@ -85,9 +109,9 @@ function subTotalPriceCalculate(dim1, dim2, dim3, density, productTypeId, loop){
     let newPrice = document.querySelector('.priceValue-'+loop+'').value;
     let subTotal = dim1*dim2*dim3*density/1000000;
     let qty = document.querySelector('.quantity-'+loop+'').value;
-    document.querySelector('.subtotalText-'+loop+'').innerText=subTotal*newPrice;
-    document.querySelector('.totalText-'+loop+'').innerText=subTotal*newPrice*qty;
-    document.querySelector('.totalInput-'+loop+'').value=subTotal*newPrice;
+    document.querySelector('.subtotalText-'+loop+'').value=(subTotal*newPrice).toFixed(2);
+    document.querySelector('.totalText-'+loop+'').innerText=(subTotal*newPrice*qty).toFixed(2);
+    document.querySelector('.totalInput-'+loop+'').value=(subTotal*newPrice).toFixed(2);
 }
 
 //generowanie nr zamówienia
@@ -101,8 +125,10 @@ function generateOrderNumber(){
         if(xhr.readyState == 4 && xhr.status == 200)
         {
             let dataResponse=JSON.parse(xhr.responseText);
+            console.log(dataResponse);
             document.querySelector('.generatedPurchaseNumber').innerText = dataResponse.purchaseNumber[0];
             document.querySelector('input[name="purchaseNumber"]').value = dataResponse.purchaseNumber[0];
+            document.querySelector('input[name="purchaseNumberId"]').value = dataResponse.purchaseNumber[1];
             document.querySelector('.PurchaseNumberSubmit').setAttribute("style","display:none;");
             document.querySelector('.PurchaseNumberDestroy').setAttribute("id",dataResponse.purchaseNumber[1]);
             document.querySelector('.PurchaseNumberDestroy').setAttribute("style","display:inline-block;");
@@ -131,7 +157,7 @@ function deleteOrderNumber(){
 //button zmiany ceny jednostkowej
 
 function showChangeButton(element) {
-    element.children[1].classList.remove('d-none');
+    element.querySelector('.changePriceValueButton').classList.remove('d-none');
 }
 
 //zmiana ceny jednostkowej
@@ -155,7 +181,7 @@ function changeUnitPrice(event, loop, updateProductAdress, supplierId,dim1, dim2
                     formData.querySelector('.changePriceValueButton').classList.add('d-none');
                     subTotalPriceCalculate(dim1, dim2, dim3, density, productTypeId, loop);
                     displayEvents('success', 'Cena ' +dataResponse['productChangedName']+ ' została zaktualizowana');
-
+                    calculateProductPriceAfterLoad();
 
                 }
         }

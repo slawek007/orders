@@ -2,15 +2,16 @@
 function priceCalculate($a,$b,$c,$density,$product_type_id, $material,$price){
     switch ($product_type_id) {
         case 2:
-            $subTotalPrice = $a*$b*$c*$density*$price/1000000;
-            if (session()->get('totalPrice')){
+            //$subTotalPrice = $a*$b*$c*$density*$price/1000000;
+            $subTotalPrice = number_format($a*$b*$c*$density*$price/1000000, 2, '.', '');
+            /*if (session()->get('totalPrice')){
                 $totalPrice = session()->get('totalPrice')+$subTotalPrice;
                 session()->put('totalPrice', $totalPrice);
             }
             else{
                 session()->put('totalPrice', $subTotalPrice);
             }
-            session()->put('subtotalPrice', $subTotalPrice);
+            session()->put('subtotalPrice', $subTotalPrice);*/
             return $subTotalPrice;
             break;
 
@@ -26,7 +27,4 @@ function priceCalculate($a,$b,$c,$density,$product_type_id, $material,$price){
         return $price;
     }
 
-}
-
-
-?>
+}?>

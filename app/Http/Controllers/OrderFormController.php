@@ -4,7 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Products;
 use App\Customers;
+use App\PurchaseOrders;
 use Illuminate\Http\Request;
+use App\PurchaseOrdersProducts;
+use Illuminate\Support\Facades\Auth;
+
 
 class OrderFormController extends Controller
 {
@@ -44,7 +48,36 @@ class OrderFormController extends Controller
      */
     public function store(Request $request)
     {
-        dd($request);
+        $user = Auth::user();
+        //add order data without products
+        $orderData = PurchaseOrders::find($request->purchaseNumberId);
+        $orderData->user_id = $user->id;
+        $orderData->suppliers_id = $request->supplier;
+        $orderData->customers_id = $request->customer;
+        $orderData->delivery_date = $request->deliveryDay;
+        $orderData->billing_subtotal = $request->orderSubTotal;
+        $orderData->billing_tax = $request->orderVat;
+        $orderData->billing_total = $request->orderTotal;
+        $orderData->currency_extension = $request->currencyExtension[1];
+        $orderData->save();
+
+        //add ordered products
+        //$orderItems = new PurchaseOrdersProducts;
+        $iteration = 0;
+        foreach ($request->product_id as $loop)
+        {
+            $iteration++;
+            $orderProductData = [
+                'purchase_orders_id' => $orderData->id,
+                'products_id' =>  $request->product_id[$iteration],
+                'quantity' => $request->quantity[$iteration],
+                'purchase_price'=> $request->quantity[$iteration],
+                'subtotal' => $request->subtotal[$iteration],
+                'total' => $request->total[$iteration],
+                'currency_extension' => $request->currencyExtension[$iteration]
+            ];
+            $orderItems = PurchaseOrdersProducts::create($orderProductData);
+        }
     }
 
     /**

@@ -1,30 +1,30 @@
 
 @extends('layouts.purchaseOrder')
 @section('PurchaseOrderGenerate')
-
 @endsection
 
 @section('formStart')
 <form id="order-form" action='{{ action('OrderFormController@store') }}' method='POST'>
-    @csrf;
+@csrf;
 @endsection
 
 @section('purchaseData')
     <span class="purchaseNumber">N<sup>o</sup></span><span class="generatedPurchaseNumber">PPL/___/__/__/PO</span>
     <input type="hidden" class="description" name="purchaseNumber" value="">
+    <input type="hidden" class="description" name="purchaseNumberId" value="">
     <span class="PurchaseNumberSubmit btn btn-success">rezerwój nr zamówienia</span>
     <span class="PurchaseNumberDestroy btn btn-danger" style="display:none;">zwolnij nr zamówienia</span>
     <span class="purchaseDate">Borowa, {{ date('d-m-Y') }}</span>
 @endsection
 
 @section('deliveryAddress')
-            <select class="w-50" id="selectCustomer" onchange="getCustomerData(event, '{{ csrf_token() }}')">
-                <option value="0" selected>(wybierz)</option>
-                @foreach ($customers as $customer)
-                <option value="{{ $customer->id }}"><strong>{{$customer->company}},</strong> {{$customer->street}}, {{$customer->city}}</option>
-                @endforeach
-              </select>
-        <ul class="list-unstyled customerData"></ul>
+    <select class="w-50" id="selectCustomer" name="customer" onchange="getCustomerData(event, '{{ csrf_token() }}')">
+        <option value="0" selected>(wybierz)</option>
+        @foreach ($customers as $customer)
+            <option value="{{ $customer->id }}"><strong>{{$customer->company}},</strong> {{$customer->street}}, {{$customer->city}}</option>
+        @endforeach
+    </select>
+<ul class="list-unstyled customerData"></ul>
 @endsection
 
 @section('supplier')
@@ -46,6 +46,7 @@
             <li>{{ $purchaseOrder[0]->productsSupplierWithPrice[0]->phone }}</li>
         @endif
     </ul>
+    <input type="hidden" name="supplier" value="{{ $purchaseOrder[0]->productsSupplierWithPrice[0]->id }}">
 @endsection
 
 @section('orderedProducts')
@@ -65,27 +66,36 @@
             <td style="text-align:left;">
                 {{ $product->description }}
                 @if ($product->product_types_id != '1')(
-                    <input type="text" name="productNewPrice[{{ $loop->iteration }}]" class="changePriceValue priceValue-{{$loop->iteration}}" onkeyup="showChangeButton(this.parentNode)" value="{{$product->productsSupplierWithPrice[0]->pivot->price}}">{{$product->productsSupplierWithPrice[0]->pivot->currency_extension}}/{{ $product->unit_to_buy }}
-                       <span class="changePriceValueButton btn-sm btn-success d-none"
-                                onclick="changeUnitPrice(
-                                            event,
-                                            '{{ $loop->iteration }}',
-                                            '{{ action('ProductsController@update',$product->id)}}',
-                                            '{{ $purchaseOrder[0]->productsSupplierWithPrice[0]->id }}',
-                                            '{{ $product->dimension1 }}',
-                                            '{{ $product->dimension2 }}',
-                                            '{{ $product->dimension3 }}',
-                                            '{{ $product->productsMaterial->density }}',
-                                            '{{ $product->product_types_id }}'
-                                            )">
-                            @lang('products.changePrice')
-                       </span>)
-                @endif
-                <input type="hidden" class="description" name="description[{{ $loop->iteration }}]" value="{{ $product->description }}">
-            </td>
+                    <input
+                    type="text"
+                    name="productNewPrice[{{ $loop->iteration }}]"
+                    class="changePriceValue priceValue-{{$loop->iteration}}"
+                    onkeyup="showChangeButton(this.parentNode)"
+                    onblur=""
+                    value="{{$product->productsSupplierWithPrice[0]->pivot->price}}">
 
+                    {{$product->productsSupplierWithPrice[0]->pivot->currency_extension}}/{{ $product->unit_to_buy }}
+
+                    <span
+                        class="changePriceValueButton btn-sm btn-success d-none"
+                        onclick="changeUnitPrice(
+                             event,
+                            '{{ $loop->iteration }}',
+                            '{{ action('ProductsController@update',$product->id)}}',
+                            '{{ $purchaseOrder[0]->productsSupplierWithPrice[0]->id }}',
+                            '{{ $product->dimension1 }}',
+                            '{{ $product->dimension2 }}',
+                            '{{ $product->dimension3 }}',
+                            '{{ $product->productsMaterial->density }}',
+                            '{{ $product->product_types_id }}')">
+                    @lang('products.changePrice')
+                    </span>)
+                @endif
+                <input type="hidden" name="currencyExtension[{{ $loop->iteration }}]" value="{{ $product->productsSupplierWithPrice[0]->pivot->currency_extension }}">
+            </td>
+            {{-- Unit --}}
             <td>
-                {{ $product->unit_of_measure }}{{-- Unit --}}
+                {{ $product->unit_of_measure }}
                 <input type="hidden" class="unit_of_measure" name="unit_of_measure[{{ $loop->iteration }}]" value="{{ $product->unit_of_measure }}">
             </td>
             {{-- QTY --}}
@@ -98,10 +108,31 @@
                 value="1">
             </td>
             {{-- SubTotal --}}
-            <td>
+            <td id="unitSubtotal">
                 @if ($product->product_types_id != '1')
-                <span class="subtotalText subtotalText-{{ $loop->iteration }}">
-                    {{ priceCalculate(
+                {{-- zmiana ze span na input - trzeba popoprawiac --}}
+                <input  type="text"
+                class="subtotalText subtotalEditableValue subtotalText-{{ $loop->iteration }}"
+                name="subtotalText-{{ $loop->iteration }}" onkeyup="showChangeButton(this.parentNode)"
+                value="{{ priceCalculate(
+                    $product->dimension1,
+                    $product->dimension2,
+                    $product->dimension3,
+                    $product->productsMaterial->density,
+                    $product->product_types_id,
+                    null,
+                    $product->productsSupplierWithPrice[0]->pivot->price)
+                }}">
+
+                <span class="currency-extension">
+                    {{ $product->productsSupplierWithPrice[0]->pivot->currency_extension }}
+                </span>
+
+                <input
+                    type="hidden"
+                    class="subtotal"
+                    name="subtotal[{{ $loop->iteration }}]"
+                    value="{{ priceCalculate(
                         $product->dimension1,
                         $product->dimension2,
                         $product->dimension3,
@@ -109,37 +140,30 @@
                         $product->product_types_id,
                         null,
                         $product->productsSupplierWithPrice[0]->pivot->price)
-                    }}
-                </span>
+                    }}">
+
                 @else
-                    <span class="subtotalText subtotalText-{{ $loop->iteration }}">
-                        {{ priceCalculate(
-                            $product->dimension1,
-                            $product->dimension2,
-                            $product->dimension3,
-                            $product->productsMaterial->density,
-                            $product->product_types_id,
-                            null,
-                            $product->productsSupplierWithPrice[0]->pivot->price)
-                        }}
-                    </span>
-                @endif
+
+                <input
+                    type="text"
+                    class="subtotalText subtotalEditableValue subtotalText-{{ $loop->iteration }}"
+                    name="subtotalText-{{ $loop->iteration }}"
+                    onkeyup="showChangeButton(this.parentNode)"
+                    value="{{ $product->productsSupplierWithPrice[0]->pivot->price }}">
 
                 <span class="currency-extension">
                     {{ $product->productsSupplierWithPrice[0]->pivot->currency_extension }}
                 </span>
+                <span class="changePriceValueButton btn-sm btn-success d-none" onclick="">
+                    @lang('products.changePrice')
+                </span>
 
-                <input
-                type="hidden"
-                class="subtotal"
-                name="subtotal[{{ $loop->iteration }}]"
-                value="{{ session('subtotalPrice') }}">
+                @endif
+
             </td>
             {{-- Total --}}
             <td>
-                <span class="totalText totalText-{{ $loop->iteration }}">
-                        {{ session('subtotalPrice') }}
-                </span>
+                <span class="totalText totalText-{{ $loop->iteration }}"></span>
                 <input type="hidden" class="totalInput-{{ $loop->iteration }}" name="total[{{ $loop->iteration }}]" value="{{ session('subtotalPrice') }}">
             <span class="currency-extension">{{ $product->productsSupplierWithPrice[0]->pivot->currency_extension }}</span>
             </td>
@@ -149,24 +173,24 @@
 
     {{-- Order Total bottom of Product list --}}
 @section('orderTotal')
-        <div class="orderSum">
-            @lang('purchaseOrders.subTotal'):
+    <div class="orderSum">
+        @lang('purchaseOrders.subTotal'):
             <input
                 type="text"
                 class="orderSubTotal"
                 name="orderSubTotal"
-                value="{{ session('totalPrice') }}">
+                value="0">
                 {{ $product->productsSupplierWithPrice[0]->pivot->currency_extension }}
-        </div>
+    </div>
 
         {{-- VAT Total bottom of Product list --}}
-        <div class="orderSum">
-            @lang('purchaseOrders.vat')({{ $product->productsSupplierWithPrice[0]->pivot->vatTax }}%):
+        <div class="orderSum vatTax">
+            @lang('purchaseOrders.vat')(<span>{{ $product->productsSupplierWithPrice[0]->pivot->vatTax }}</span>%):
             <input
                 type="text"
                 class="orderVat"
                 name="orderVat"
-                value="{{ round($product->productsSupplierWithPrice[0]->pivot->vatTax*session('totalPrice')/100, 2) }}">
+                value="0">
                 {{ $product->productsSupplierWithPrice[0]->pivot->currency_extension }}
         </div>
 
@@ -177,13 +201,13 @@
                 type="text"
                 class="orderTotalWithVat"
                 name="orderTotal"
-                value="{{ round((1+$product->productsSupplierWithPrice[0]->pivot->vatTax/100)*session('totalPrice'), 2) }}">
+                value="0">
                 {{ $product->productsSupplierWithPrice[0]->pivot->currency_extension }}
         </div>
 @endsection
 
 @section('deliveryDate')
-    <input type="date" name="bday" max="3000-12-31" min="{{ date('Y-m-d') }}" style="border:none;">
+    <input type="date" name="deliveryDay" max="3000-12-31" min="{{ date('Y-m-d') }}" style="border:none;">
 @endsection
 
 @section('incoterms')

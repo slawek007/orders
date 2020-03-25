@@ -26,11 +26,11 @@
                         <td>{{ $purchaseOrder->customer['short_name'] }}</td>
                         <td>{{ $purchaseOrder->user['name'] }}</td>
                         <td>{{ $purchaseOrder->delivery_date }}</td>
-                        <td>{{ $purchaseOrder->billing_subtotal }}</td>
-                        <td>{{ $purchaseOrder->created_at }}</td>
+                        <td>{{ $purchaseOrder->billing_total }} {{ $purchaseOrder->currency_extension }}</td>
+                        <td>{{ $purchaseOrder->updated_at }}</td>
                         <td>
                             <a href="#">Zamów</a>
-                            <a href="#">Podgląd</a>
+                            <a href="{{ action("PurchaseOrdersController@show",$purchaseOrder->id) }}">Podgląd</a>
                             <a href="#">Edycja</a>
                         </td>
                     </tr>
