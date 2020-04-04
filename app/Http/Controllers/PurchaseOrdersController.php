@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Products;
 use App\Customers;
 use App\PurchaseOrders;
+use App\PurchaseOrdersProducts;
 use Illuminate\Support\Arr;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
@@ -66,11 +67,13 @@ return 'Hello World';
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show(Request $request, $id)
+    public function show($id)
     {
 
-        $purchaseOrder = PurchaseOrders::with('products', 'customer', 'supplier')->where('id',$id)->firstOrFail();
-        return view('purchaseOrders.showPurchaseOrder', compact('purchaseOrder'));
+        $purchaseOrder = PurchaseOrders::with('customer', 'supplier','user')->where('id',$id)->firstOrFail();
+        $purchaseProducts = PurchaseOrdersProducts::with('productsDetail')->where('purchase_orders_id',$id)->get();
+
+        return view('purchaseOrders.showPurchaseOrder', compact('purchaseOrder', 'purchaseProducts'));
     }
 
     /**

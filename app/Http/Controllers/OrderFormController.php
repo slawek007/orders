@@ -50,34 +50,48 @@ class OrderFormController extends Controller
     {
         $user = Auth::user();
         //add order data without products
-        $orderData = PurchaseOrders::find($request->purchaseNumberId);
-        $orderData->user_id = $user->id;
-        $orderData->suppliers_id = $request->supplier;
-        $orderData->customers_id = $request->customer;
-        $orderData->delivery_date = $request->deliveryDay;
-        $orderData->billing_subtotal = $request->orderSubTotal;
-        $orderData->billing_tax = $request->orderVat;
-        $orderData->billing_total = $request->orderTotal;
-        $orderData->currency_extension = $request->currencyExtension[1];
-        $orderData->save();
+        $orderData = PurchaseOrders::findOrFail($request->purchaseNumberId);
 
-        //add ordered products
-        //$orderItems = new PurchaseOrdersProducts;
-        $iteration = 0;
-        foreach ($request->product_id as $loop)
-        {
-            $iteration++;
-            $orderProductData = [
+        if ($orderData->success == false){
+            $orderData->user_id = $user->id;
+            $orderData->suppliers_id = $request->supplier;
+            $orderData->customers_id = $request->customer;
+            $orderData->delivery_date = $request->deliveryDay;
+            $orderData->billing_subtotal = $request->orderSubTotal;
+            $orderData->billing_tax = $request->orderVat;
+            $orderData->billing_total = $request->orderTotal;
+            $orderData->currency_extension = $request->currencyExtension[1];
+            $orderData->success = true;
+            $orderData->save();
+
+            //add ordered products
+            $iteration = 0;
+            foreach ($request->product_id as $loop)
+            {
+                $iteration++;
+                $productPurchasePrice = $request->productNewPrice[$iteration] ? $request->productNewPrice[$iteration] : $request->subtotal[$iteration];
+
+                $orderProductData = [
                 'purchase_orders_id' => $orderData->id,
                 'products_id' =>  $request->product_id[$iteration],
                 'quantity' => $request->quantity[$iteration],
-                'purchase_price'=> $request->quantity[$iteration],
+                'purchase_price'=> $productPurchasePrice,
                 'subtotal' => $request->subtotal[$iteration],
                 'total' => $request->total[$iteration],
                 'currency_extension' => $request->currencyExtension[$iteration]
-            ];
-            $orderItems = PurchaseOrdersProducts::create($orderProductData);
+                ];
+                $orderItems = PurchaseOrdersProducts::create($orderProductData);
+            }
+            return redirect()->action(
+                'PurchaseOrdersController@show', ['id' => $request->purchaseNumberId]
+            );
         }
+        else{
+            return redirect()->action(
+                'PurchaseOrdersController@show', ['id' => $request->purchaseNumberId]
+            );
+        }
+
     }
 
     /**

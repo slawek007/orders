@@ -147,14 +147,25 @@
                 <input
                     type="text"
                     class="subtotalText subtotalEditableValue subtotalText-{{ $loop->iteration }}"
-                    name="subtotalText-{{ $loop->iteration }}"
+                    name="subtotal[{{ $loop->iteration }}]"
                     onkeyup="showChangeButton(this.parentNode)"
                     value="{{ $product->productsSupplierWithPrice[0]->pivot->price }}">
 
                 <span class="currency-extension">
                     {{ $product->productsSupplierWithPrice[0]->pivot->currency_extension }}
                 </span>
-                <span class="changePriceValueButton btn-sm btn-success d-none" onclick="">
+                <span
+                    class="changePriceValueButton btn-sm btn-success d-none"
+                    onclick="changeUnitPrice(
+                         event,
+                        '{{ $loop->iteration }}',
+                        '{{ action('ProductsController@update',$product->id)}}',
+                        '{{ $purchaseOrder[0]->productsSupplierWithPrice[0]->id }}',
+                        'NULL',
+                        'NULL',
+                        'NULL',
+                        'NULL',
+                        '{{ $product->product_types_id }}')">
                     @lang('products.changePrice')
                 </span>
 

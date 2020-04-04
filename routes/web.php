@@ -35,3 +35,4 @@ Route::resource('/addtoorder', 'AddToOrderController');
 Route::resource('/purchaseordernumber', 'PurchaseNumberController');
 Route::resource('/orderform', 'OrderFormController')->middleware('auth');
 Route::resource('/getcustomerData', 'PurchaseCustomerController');
+Route::resource('/purchaseproducts', 'PurchaseProductsController');

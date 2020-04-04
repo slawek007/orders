@@ -24,22 +24,25 @@ function calculateProductPriceAfterLoad() {
     let unitPrice = document.querySelectorAll('.subtotalText');
     let vatTax = document.querySelector('.vatTax span').innerText;
 
-    var totalPrice = 0;
+    var sumAllTotal = 0;
     for (let index = 1; index <= quantity.length; index++) {
-        totalPrice = Round((totalPrice+Number(unitPrice[index-1].value)),2);
-        document.querySelector('.totalText-'+index).innerHTML=Round((Number(unitPrice[index-1].value)),2).toFixed(2);
+
+        totalPriceForOnePosition = (unitPrice[index-1].value)*(quantity[index-1].value);
+        sumAllTotal = sumAllTotal+totalPriceForOnePosition;
+        document.querySelector('.totalText-'+index).innerHTML=Round((totalPriceForOnePosition),2).toFixed(2);
+        document.querySelector('.totalInput-'+index).value=Round((totalPriceForOnePosition),2).toFixed(2);
     }
 
-    document.querySelector('.orderSubTotal').value = Round(totalPrice,2).toFixed(2);
-    document.querySelector('.orderVat').value = Round(totalPrice*vatTax/100,2).toFixed(2);
-    document.querySelector('.orderTotalWithVat').value = Round(totalPrice*(1+(vatTax/100)),2).toFixed(2);
+    document.querySelector('.orderSubTotal').value = Round(sumAllTotal,2).toFixed(2);
+    document.querySelector('.orderVat').value = Round(sumAllTotal*vatTax/100,2).toFixed(2);
+    document.querySelector('.orderTotalWithVat').value = Round(sumAllTotal*(1+(vatTax/100)),2).toFixed(2);
 
   }
 
 //przeliczanie po zmianie ilości
 function calculateProductPrice(quantity, unitPrice, loop, vatTax) {
     var subtotal = document.querySelector('.subtotalText-'+loop).value;
-    document.querySelector('.totalText-'+loop).innerHTML = subtotal*quantity;
+    document.querySelector('.totalText-'+loop).innerHTML = (subtotal*quantity).toFixed(2);
 
     var allTotal = document.querySelectorAll('.totalText');
     var totalPrice = 0;
@@ -47,9 +50,9 @@ function calculateProductPrice(quantity, unitPrice, loop, vatTax) {
     for (let index = 0; index < allTotal.length; index++) {
         totalPrice = totalPrice+Number(allTotal[index].innerText);
     }
-    document.querySelector('.orderSubTotal').value = Round(totalPrice,2);
-    document.querySelector('.orderVat').value = Round(totalPrice*vatTax/100,2);
-    document.querySelector('.orderTotalWithVat').value = Round(totalPrice*(1+(vatTax/100)),2);
+    document.querySelector('.orderSubTotal').value = Round(totalPrice,2).toFixed(2);
+    document.querySelector('.orderVat').value = Round(totalPrice*vatTax/100,2).toFixed(2);
+    document.querySelector('.orderTotalWithVat').value = Round(totalPrice*(1+(vatTax/100)),2).toFixed(2);
 
   }
 
@@ -161,13 +164,15 @@ function showChangeButton(element) {
 }
 
 //zmiana ceny jednostkowej
-function changeUnitPrice(event, loop, updateProductAdress, supplierId,dim1, dim2, dim3, density, productTypeId){
+function changeUnitPrice(event, loop, updateProductAdress, supplierId, dim1, dim2, dim3, density, productTypeId){
 
     let tokenCode = document.querySelector('meta[name="csrf-token"]').content;
     var formData = event.target.parentNode;
     let json = JSON.stringify({
         supplierId: supplierId,
         newPrice: formData.firstElementChild.value});
+    console.log(formData);
+    console.log(productTypeId);
     var xhr = new XMLHttpRequest();
     xhr.open('PATCH', updateProductAdress, true);
     xhr.setRequestHeader('X-CSRF-TOKEN', tokenCode);
@@ -178,10 +183,17 @@ function changeUnitPrice(event, loop, updateProductAdress, supplierId,dim1, dim2
         if(xhr.readyState == 4 && xhr.status == 200) {
                 let dataResponse=JSON.parse(xhr.responseText);
                 if (dataResponse['success']){
-                    formData.querySelector('.changePriceValueButton').classList.add('d-none');
-                    subTotalPriceCalculate(dim1, dim2, dim3, density, productTypeId, loop);
-                    displayEvents('success', 'Cena ' +dataResponse['productChangedName']+ ' została zaktualizowana');
-                    calculateProductPriceAfterLoad();
+                    if (productTypeId != '1'){
+                        formData.querySelector('.changePriceValueButton').classList.add('d-none');
+                        subTotalPriceCalculate(dim1, dim2, dim3, density, productTypeId, loop);
+                        displayEvents('success', 'Cena ' +dataResponse['productChangedName']+ ' została zaktualizowana');
+                        calculateProductPriceAfterLoad();
+                    }
+                    else{
+                        formData.querySelector('.changePriceValueButton').classList.add('d-none');
+                        displayEvents('success', 'Cena ' +dataResponse['productChangedName']+ ' została zaktualizowana');
+                        calculateProductPriceAfterLoad();
+                    }
 
                 }
         }

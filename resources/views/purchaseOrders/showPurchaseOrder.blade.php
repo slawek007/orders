@@ -38,23 +38,28 @@
     @endsection
 
     @section('orderedProducts')
-    @foreach ($purchaseOrder->products as $product)
+    @foreach ($purchaseProducts as $product)
     <tr>
         <td>{{ $loop->iteration }}</td>
-        <td style="text-align:left;">{{ $product->short_description }}</td>
-        <td style="text-align:left;">{{ $product->description }}</td>
-        <td>{{ $product->unit_of_measure }}</td>
-        <td>{{ $product->pivot->quantity }}</td>
-        <td>{{ $product->pivot->purchase_price }} {{ $product->pivot->currency_extension }}</td>
-        <td>{{ $product->pivot->subtotal }} {{ $product->pivot->currency_extension }}</td>
+        <td style="text-align:left;">{{ $product->productsDetail->short_description }}</td>
+        <td style="text-align:left;">
+            {{ $product->productsDetail->description }}
+            @if ($product->productsDetail->product_types_id != '1')
+                ({{ number_format($product->purchase_price, 2,',','') }} {{ $product->currency_extension }})
+            @endif
+        </td>
+        <td>{{ $product->productsDetail->unit_of_measure }}</td>
+        <td>{{ $product->quantity }}</td>
+        <td>{{ number_format($product->subtotal,2,',','') }} {{ $product->currency_extension }}</td>
+        <td>{{ number_format($product->total,2,',','') }} {{ $product->currency_extension }}</td>
     </tr>
         @endforeach
     @endsection
 
     @section('orderTotal')
-    <p>@lang('purchaseOrders.subTotal'): {{ $purchaseOrder->billing_subtotal }}{{ $purchaseOrder->currency_extension }} {{ $purchaseOrder->products[0]->pivot->currency_extension }}</p>
-    <p>@lang('purchaseOrders.vat'): {{ $purchaseOrder->billing_tax }}{{ $purchaseOrder->currency_extension }} {{ $purchaseOrder->products[0]->pivot->currency_extension }}</p>
-    <p>@lang('purchaseOrders.total'): {{ $purchaseOrder->billing_total }}{{ $purchaseOrder->currency_extension }} {{ $purchaseOrder->products[0]->pivot->currency_extension }}</p>
+    <p>@lang('purchaseOrders.subTotal'): {{ number_format($purchaseOrder->billing_subtotal,2,',','') }}{{ $purchaseOrder->currency_extension }}</p>
+    <p>@lang('purchaseOrders.vat'): {{ number_format($purchaseOrder->billing_tax,2,',','') }}{{ $purchaseOrder->currency_extension }}</p>
+    <p>@lang('purchaseOrders.total'): {{ number_format($purchaseOrder->billing_total,2,',','') }}{{ $purchaseOrder->currency_extension }}</p>
     @endsection
 
     @section('deliveryDate', $purchaseOrder->delivery_date)
