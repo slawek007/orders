@@ -26,13 +26,17 @@ Route::group(['prefix' => 'admin'], function () {
 
 Auth::routes();
 
+
+
+
+
 Route::get('/home', 'HomeController@index')->name('home');
-Route::resource('/products', 'ProductsController');
-Route::resource('/suppliers', 'SuppliersController');
-Route::resource('/customers', 'CustomersController');
-Route::resource('/purchaseorders', 'PurchaseOrdersController');
-Route::resource('/addtoorder', 'AddToOrderController');
-Route::resource('/purchaseordernumber', 'PurchaseNumberController');
-Route::resource('/orderform', 'OrderFormController')->middleware('auth');
-Route::resource('/getcustomerData', 'PurchaseCustomerController');
-Route::resource('/purchaseproducts', 'PurchaseProductsController');
+Route::resource('/products', 'Orders\ProductsController');
+Route::resource('/suppliers', 'Orders\SuppliersController');
+Route::resource('/customers', 'Orders\CustomersController');
+Route::resource('/purchaseorders', 'Orders\PurchaseOrdersController');
+Route::resource('/addtocart', 'Orders\AddToCartController');
+Route::resource('/purchaseordernumber', 'Orders\PurchaseNumberController');
+Route::resource('/orderform', 'Orders\OrderFormController')->middleware('auth');
+Route::resource('/getcustomerData', 'Orders\PurchaseCustomerController');
+//Route::resource('/purchaseproducts', 'PurchaseProductsController');

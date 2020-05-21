@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Orders;
 
+use App\Http\Controllers\Controller;
 use App\Customers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cookie;
@@ -36,6 +37,7 @@ class AddToOrderController extends Controller
      */
     public function store(Request $request)
     {
+
         $supplierId = $request->supplierId;
         $productId = $request->productId;
         $productShortDescription = $request->productShortDescription;
@@ -48,10 +50,10 @@ class AddToOrderController extends Controller
 
         if ($checkOrder = session()->get('order')){
             if (false !== array_search($productId, array_column($checkOrder, 'productId')) ){
-                return redirect()->back()->withErrors(['produkt był już dodany i próbujesz dodać produkt od innego dostawcy']);
+                return redirect()->back()->withErrors(['produkt był już dodany i próbujesz dodać produkt od innego dostawcy HA']);
             }
             elseif( false === array_search($supplierId, array_column($checkOrder, 'supplierId'))){
-                return redirect()->back()->withErrors(['Próbujesz dodać produkt od innego dostawcy!']);
+                return redirect()->back()->withErrors(['Próbujesz dodać produkt od innego dostawcy! HA']);
             }
             else{
                 //dd($request->get());
@@ -120,6 +122,6 @@ class AddToOrderController extends Controller
         $order = array_values(session()->get('order'));
         unset($order[$id]);
         session()->put('order',array_values($order));
-        return redirect()->back()->with('success', 'Element usunięty');
+        return redirect()->back()->with('success', 'Element usunięty1');
     }
 }

@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Orders;
 
+use App\Http\Controllers\Controller;
 use App\Products;
 use Illuminate\Http\Request;
 use App\PurchaseOrdersProducts;
@@ -90,6 +91,7 @@ class ProductsController extends Controller
                                 }])->FirstOrFail();
                                 //dd($changePriceValue);
                                 $changePriceValue->productsSupplierWithPrice[0]->pivot->update(['price' => $productNewPrice]);
+
             return response()->json([
                 'success' => true,
                 'productChangedName' => $changePriceValue->short_description

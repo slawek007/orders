@@ -3,7 +3,7 @@
 @section('content')
 <div class="container-fluid">
     <h4 class="display-5 d-inline">Odbiorcy</h4>
-    <a href="{{ action('CustomersController@create') }}" class="btn btn-success d-inline-block float-right mb-2" >Dodaj odbiorcę</a>
+    <a href="{{ action('Orders\CustomersController@create') }}" class="btn btn-success d-inline-block float-right mb-2" >Dodaj odbiorcę</a>
      <div class="table-responsive">
         <table class="table table-striped table-sm">
           <thead>
@@ -37,8 +37,8 @@
                         <td>{{ $customer->payment }}</td>
                         <td>{{ $customer->created_at }}</td>
                         <td>
-                            <a href="{{ action('CustomersController@show',$customer->id) }}">@lang('messages.show')</a>
-                            <form method="POST" action="{{ action('CustomersController@destroy',$customer->id) }}">
+                            <a href="{{ action('Orders\CustomersController@show',$customer->id) }}">@lang('messages.show')</a>
+                            <form method="POST" action="{{ action('Orders\CustomersController@destroy',$customer->id) }}">
                                 @csrf
                                 @method('delete')
                                 <button type="submit" class="btn btn-danger btn-sm"  onclick="return confirm('@lang('messages.deleteConfirmation')');">@lang('messages.delete')</button>

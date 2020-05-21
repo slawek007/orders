@@ -25,7 +25,7 @@
                         <td>{{ $order->supplier['company'] }}</td>
                         <td>{{ $order->created_at }}</td>
                         <td>
-                            <a href="#">Podgląd</a>
+                            <a href="{{ action('Orders\PurchaseOrdersController@show', ['id' => $order->id]) }}">Podgląd</a>
                             <a href="#">Edycja</a>
                         </td>
                     </tr>
@@ -38,7 +38,7 @@
 
     <div class="container-fluid mt-5">
         <h4 class="display-5">Dane odbiorcy:</h4>
-        <form actions='{{ action('CustomersController@update', $customer->id) }}' method='POST'>
+        <form actions='{{ action('Orders\CustomersController@update', $customer->id) }}' method='POST'>
             @method('PATCH')
             @csrf
             <div class="form-group">

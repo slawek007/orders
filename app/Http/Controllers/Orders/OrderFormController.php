@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Orders;
 
+use App\Http\Controllers\Controller;
 use App\Products;
 use App\Customers;
 use App\PurchaseOrders;
@@ -83,12 +84,12 @@ class OrderFormController extends Controller
                 $orderItems = PurchaseOrdersProducts::create($orderProductData);
             }
             return redirect()->action(
-                'PurchaseOrdersController@show', ['id' => $request->purchaseNumberId]
+                'Orders\PurchaseOrdersController@show', ['id' => $request->purchaseNumberId]
             );
         }
         else{
             return redirect()->action(
-                'PurchaseOrdersController@show', ['id' => $request->purchaseNumberId]
+                'Orders\PurchaseOrdersController@show', ['id' => $request->purchaseNumberId]
             );
         }
 

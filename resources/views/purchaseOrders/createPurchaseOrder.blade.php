@@ -4,7 +4,7 @@
 @endsection
 
 @section('formStart')
-<form id="order-form" action='{{ action('OrderFormController@store') }}' method='POST'>
+<form id="order-form" action='{{ action('Orders\OrderFormController@store') }}' method='POST'>
 @csrf;
 @endsection
 
@@ -81,7 +81,7 @@
                         onclick="changeUnitPrice(
                              event,
                             '{{ $loop->iteration }}',
-                            '{{ action('ProductsController@update',$product->id)}}',
+                            '{{ action('Orders\ProductsController@update',$product->id)}}',
                             '{{ $purchaseOrder[0]->productsSupplierWithPrice[0]->id }}',
                             '{{ $product->dimension1 }}',
                             '{{ $product->dimension2 }}',
@@ -159,7 +159,7 @@
                     onclick="changeUnitPrice(
                          event,
                         '{{ $loop->iteration }}',
-                        '{{ action('ProductsController@update',$product->id)}}',
+                        '{{ action('Orders\ProductsController@update',$product->id)}}',
                         '{{ $purchaseOrder[0]->productsSupplierWithPrice[0]->id }}',
                         'NULL',
                         'NULL',

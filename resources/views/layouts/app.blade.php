@@ -37,16 +37,16 @@
                     <!-- Left Side Of Navbar -->
                     <ul class="navbar-nav mr-auto">
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ action("ProductsController@index") }}">Produkty</a>
+                            <a class="nav-link" href="{{ action("Orders\ProductsController@index") }}">Produkty</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ action("SuppliersController@index") }}">Dostawcy</a>
+                            <a class="nav-link" href="{{ action("Orders\SuppliersController@index") }}">Dostawcy</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ action("CustomersController@index") }}">Odbiorcy</a>
+                            <a class="nav-link" href="{{ action("Orders\CustomersController@index") }}">Odbiorcy</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ action("PurchaseOrdersController@index") }}">Zamówienia</a>
+                            <a class="nav-link" href="{{ action("Orders\PurchaseOrdersController@index") }}">Zamówienia</a>
                         </li>
 
                     </ul>

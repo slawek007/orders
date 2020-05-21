@@ -3,7 +3,7 @@
 @section('content')
 <div class="container-fluid">
     <h4 class="display-5 d-inline">Dostawcy</h4>
-    <a href="{{ action('SuppliersController@create') }}" class="btn btn-success d-inline-block float-right mb-2" >Dodaj dostawcę</a>
+    <a href="{{ action('Orders\SuppliersController@create') }}" class="btn btn-success d-inline-block float-right mb-2" >Dodaj dostawcę</a>
      <div class="table-responsive">
         <table class="table table-striped table-sm">
           <thead>
@@ -37,8 +37,8 @@
                         <td>{{ $supplier->payment }}</td>
                         <td>{{ $supplier->created_at }}</td>
                         <td>
-                            <a href="{{ action('SuppliersController@show',$supplier->id) }}">Podgląd</a>
-                            <form method="POST" action="{{ action('SuppliersController@destroy',$supplier->id) }}">
+                            <a href="{{ action('Orders\SuppliersController@show',$supplier->id) }}">Podgląd</a>
+                            <form method="POST" action="{{ action('Orders\SuppliersController@destroy',$supplier->id) }}">
                                 @csrf
                                 @method('delete')
                                 <button type="submit" class="btn btn-danger btn-sm"  onclick="return confirm('Czy na pewno chcesz usunąć rekord z bazy?');">USUŃ</button>

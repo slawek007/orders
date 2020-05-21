@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Orders;
 
-use App\Suppliers;
+use App\Http\Controllers\Controller;
+use App\Customers;
 use Illuminate\Http\Request;
-use App\Http\Requests\validateSupplierAndCustomer;
 
-class SuppliersController extends Controller
+class PurchaseCustomerController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -15,8 +15,7 @@ class SuppliersController extends Controller
      */
     public function index()
     {
-        $suppliers = Suppliers::all();
-        return view('suppliers.suppliers', compact('suppliers'));
+        //
     }
 
     /**
@@ -26,7 +25,7 @@ class SuppliersController extends Controller
      */
     public function create()
     {
-        return view('suppliers.addSupplier');
+        //
     }
 
     /**
@@ -35,10 +34,9 @@ class SuppliersController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(validateSupplierAndCustomer $request)
+    public function store(Request $request)
     {
-        Suppliers::create($request->validated());
-        return redirect(action('SuppliersController@show', Suppliers::get()->last()->id))->with('success', 'Dostawca został dodany do bazy !.');
+        //
     }
 
     /**
@@ -49,8 +47,8 @@ class SuppliersController extends Controller
      */
     public function show($id)
     {
-        $supplier = Suppliers::with('purchaseOrders')->where('id',$id)->firstOrFail();
-        return view('suppliers.showSupplier', compact('supplier'));
+        $customer = Customers::select('contact_person','company','street', 'zip_code', 'city')->where('id',$id)->firstOrFail();
+        return response()->json($customer);
     }
 
     /**
@@ -71,12 +69,9 @@ class SuppliersController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Suppliers $supplier)
+    public function update(Request $request, $id)
     {
-        //$supplier->update(request(['short_name', 'code', 'company', 'street', 'zip_code', 'city', 'country', 'nip', 'phone', 'email', 'payment']));
-        $supplier->update(request()->all());
-
-        return redirect(action('SuppliersController@show', $supplier->id));
+        //
     }
 
     /**
@@ -85,9 +80,8 @@ class SuppliersController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Suppliers $supplier)
+    public function destroy($id)
     {
-        $supplier->delete();
-        return redirect(action('SuppliersController@index'))->with('success', 'Usunięto rekord z bazy !.');
+        //
     }
 }

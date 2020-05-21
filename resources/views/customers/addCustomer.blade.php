@@ -5,7 +5,7 @@
     <h4 class="display-5">@lang('customers.addCustomer')</h4>
         <div class="container-fluid mt-5">
         <h4 class="display-5">@lang('customers.customerData')</h4>
-        <form action='{{ action('CustomersController@store') }}' method='POST'>
+        <form action='{{ action('Orders\CustomersController@store') }}' method='POST'>
             @csrf
             <div class="form-group">
                 <label for="short_name">@lang('messages.shortName')</label>

@@ -4,7 +4,7 @@
 <div class="container-fluid">
         <div class="row">
             <div class="col">
-                    <form method="GET" action="{{ action('OrderFormController@create') }}" >
+                    <form method="GET" action="{{ action('Orders\OrderFormController@create') }}" >
 
 
                             <ul class="listOfaddedProducts">
@@ -22,7 +22,7 @@
                 @foreach ($order as $orderedProduct)
                     <li>
                         {{ $orderedProduct['productShortDescription'] }}
-                        <form class="d-inline" method="POST" action="{{ action('AddToOrderController@destroy', $loop->index) }}" >
+                        <form class="d-inline" method="POST" action="{{ action('Orders\AddToOrderController@destroy', $loop->index) }}" >
                                 @csrf
                                 @method("DELETE")
                                 <input type="hidden" name="id" value="{{ $loop->index }}">
@@ -35,7 +35,7 @@
             @if(session('customers'))
             <div class="form-group col-md-6">
                 <label for="sel1">@lang('products.PickDeliveryAdress')</label>
-                <form method="GET" action="{{ action('PurchaseOrdersController@create') }}" >
+                <form method="GET" action="{{ action('Orders\PurchaseOrdersController@create') }}" >
                     <select class="selectCustomer form-control" name="customerId">
                         @foreach(session('customers') as $customer)
                         <option value="{{ $customer->id }}">{{ $customer->company }}</option>
@@ -45,7 +45,7 @@
                 </form>
             </div>
             @endif
-        <a href="{{ action('PurchaseOrdersController@create') }}"></a>
+        <a href="{{ action('Orders\PurchaseOrdersController@create') }}"></a>
     @endif
     </div>
      <div class="table-responsive">
@@ -74,7 +74,7 @@
                                 <button class="changePriceValueButton btn-sm btn-success d-none" type="submit"
                                         onclick="updateDatabase(
                                                     event,
-                                                    '{{ action('ProductsController@update',$product->id)}}',
+                                                    '{{ action('Orders\ProductsController@update',$product->id)}}',
                                                     '{{csrf_token()}}',
                                                     '{{ $productSupplier->id }}')">
                                             @lang('products.changePrice')
@@ -87,10 +87,9 @@
                             <a class="btn-sm btn-info" href="/products/{{ $product->id }}?supplier={{ $productSupplier->id }}">@lang('products.show')</a>
                             <a class="btn-sm btn-warning" href="#">@lang('products.edit')</a>
                             <form id="addToOrderForm">
-                                <button class="btn-sm btn-success" type="submit"
-                                        onclick="addToOrder(
+                                <button class="btn-sm btn-success"
+                                        onclick="addToCart(
                                         event,
-                                        '{{ action('AddToOrderController@store') }}',
                                         '{{csrf_token()}}',
                                         '{{ $productSupplier->id }}',
                                         '{{ $product->short_description }}',
@@ -110,9 +109,5 @@
 
 @push('scripts')
     <script type="text/javascript" src="{{ asset('js/productsSiteFunctions.js') }}"></script>
-
 @endpush
 
-@section('endSiteFunctions')
-<script type="text/javascript" src="{{ asset('js/addToOrder.js') }}"></script>
-@endsection

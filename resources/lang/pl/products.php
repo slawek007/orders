@@ -15,7 +15,11 @@ return [
     'edit' => 'Edycja',
     'show' => 'Podgląd',
     'goToOrder' => 'Przejdź do formularza zamówienia',
-    'changePrice'=>'zapisz'
+    'changePrice'=>'zapisz',
+    'otherSupplier'=>'Chcesz dodadać produkt od innego dostawcy',
+    'sameProduct'=>'Produkt już był dodany do zamówienia',
+    'addedProductToCart'=>'Produkt został dodany do zamówienia',
+    'notAddedProductToCart'=>'BŁĄD, produkt nie został dodany do zamówienia'
 
 
 ];

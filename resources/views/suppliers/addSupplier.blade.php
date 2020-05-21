@@ -5,7 +5,7 @@
     <h4 class="display-5">Dodaj dostawcę</h4>
         <div class="container-fluid mt-5">
         <h4 class="display-5">Dane dostawcy:</h4>
-        <form action='{{ action('SuppliersController@store') }}' method='POST'>
+        <form action='{{ action('Orders\SuppliersController@store') }}' method='POST'>
             @csrf
             <div class="form-group">
                 <label for="short_name">Krótka nazwa</label>

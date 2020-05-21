@@ -1,11 +1,13 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Orders;
 
+use App\Http\Controllers\Controller;
 use App\Customers;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cookie;
 
-class PurchaseCustomerController extends Controller
+class AddToOrderController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -35,7 +37,12 @@ class PurchaseCustomerController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        dd($request);
+        $supplierId = $request->supplierId;
+        $productId = $request->productId;
+        $productShortDescription = $request->productShortDescription;
+
+
     }
 
     /**
@@ -46,8 +53,7 @@ class PurchaseCustomerController extends Controller
      */
     public function show($id)
     {
-        $customer = Customers::select('contact_person','company','street', 'zip_code', 'city')->where('id',$id)->firstOrFail();
-        return response()->json($customer);
+        //
     }
 
     /**
@@ -81,6 +87,9 @@ class PurchaseCustomerController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $order = array_values(session()->get('order'));
+        unset($order[$id]);
+        session()->put('order',array_values($order));
+        return redirect()->back()->with('success', 'Element usunięty1');
     }
 }

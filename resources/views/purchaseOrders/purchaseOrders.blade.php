@@ -29,9 +29,8 @@
                         <td>{{ $purchaseOrder->billing_total }} {{ $purchaseOrder->currency_extension }}</td>
                         <td>{{ $purchaseOrder->updated_at }}</td>
                         <td>
-                            <a href="#">Zamów</a>
-                            <a href="{{ action("PurchaseOrdersController@show",$purchaseOrder->id) }}">Podgląd</a>
-                            <a href="#">Edycja</a>
+                            <a href="#">Ponów</a>
+                            <a href="{{ action("Orders\PurchaseOrdersController@show",$purchaseOrder->id) }}">Podgląd</a>
                         </td>
                     </tr>
             @endforeach

@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Orders;
 
+use App\Http\Controllers\Controller;
 use App\Customers;
 use Illuminate\Http\Request;
 use App\Http\Requests\validateSupplierAndCustomer;
@@ -35,10 +36,10 @@ class CustomersController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(validatesupplierAndCustomer $request)
+    public function store(validateSupplierAndCustomer $request)
     {
         customers::create($request->validated());
-        return redirect(action('CustomersController@show', customers::get()->last()->id))->with('success', 'Odbiorca został dodany do bazy !.');
+        return redirect(action('Orders\CustomersController@show', customers::get()->last()->id))->with('success', 'Odbiorca został dodany do bazy !.');
     }
 
     /**
@@ -73,10 +74,9 @@ class CustomersController extends Controller
      */
     public function update(customers $customer)
     {
-        //$customer->update(request(['short_name', 'code', 'company', 'street', 'zip_code', 'city', 'country', 'nip', 'phone', 'email', 'payment']));
         $customer->update(request()->all());
 
-        return redirect(action('CustomersController@show', $customer->id));
+        return redirect(action('Orders\CustomersController@show', $customer->id));
     }
 
     /**
@@ -88,6 +88,6 @@ class CustomersController extends Controller
     public function destroy(customers $customer)
     {
         $customer->delete();
-        return redirect(action('CustomersController@index'))->with('success', 'Usunięto rekord z bazy !.');
+        return redirect(action('Orders\CustomersController@index'))->with('success', 'Usunięto rekord z bazy !.');
     }
 }
