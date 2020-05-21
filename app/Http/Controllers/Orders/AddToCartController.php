@@ -40,27 +40,6 @@ class AddToCartController extends Controller
     {
         $user = Auth::user();
         $cart = PurchaseCart::where(['user_id'=>$user->id])->get();
-        if ($cart == false){
-            //dodajemy
-        }
-        //dd($cart->firstWhere('product_id',$request->productId)->count());
-        //dd($cart->first()->supplier_id);
-        //dd(Lang::get('products.otherSupplier'));
-        if (($cart->count()>0) && ($cart->first()->supplier_id !== $request->supplierId)){
-            //dd('Nie mogę dodać bo w bazie jest inny dostawca');
-            return response()->json([
-                'status' => 'error',
-                'statusDescription' => Lang::get('products.otherSupplier')
-            ]);
-        }
-
-        if (($cart->count()>0) && ($cart->firstWhere('product_id',$request->productId))){
-           // dd('sorry the same product in database');
-            return response()->json([
-                'status' => 'success',
-                'statusDescription' => Lang::get('products.sameProduct')
-            ]);
-        }
         $addTocart = PurchaseCart::create([
             'user_id'=>$user->id,
             'product_id'=>$request->productId,
@@ -68,6 +47,39 @@ class AddToCartController extends Controller
             'supplier_id'=>$request->supplierId
         ]);
 
+
+        //Jeżeli koszyk jest pusty
+        if ($cart == false){
+            if ($addTocart->save()){
+                return response()->json([
+                    'status' => 'success',
+                    'statusDescription' => Lang::get('products.addedProductToCart')
+                ]);
+            }
+            else{
+                return response()->json([
+                    'status' => 'erorr',
+                    'statusDescription' => Lang::get('products.notAddedProductToCart')
+                ]);
+            }
+        }
+
+        //sprawdzanie czy ten sam dostawca
+        if (($cart->count()>0) && ($cart->first()->supplier_id !== $request->supplierId)){
+            return response()->json([
+                'status' => 'error',
+                'statusDescription' => Lang::get('products.otherSupplier')
+            ]);
+        }
+        //sprawdzanie czy produkt był dodany
+        if (($cart->count()>0) && ($cart->firstWhere('product_id',$request->productId))){
+            return response()->json([
+                'status' => 'success',
+                'statusDescription' => Lang::get('products.sameProduct')
+            ]);
+        }
+
+        //Dodanie produktu gdy wszystkie warunki powyższe nie spełnione
         if ($addTocart->save()){
             return response()->json([
                 'status' => 'success',

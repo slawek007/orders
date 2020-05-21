@@ -19,7 +19,7 @@ return [
     'otherSupplier'=>'Chcesz dodadać produkt od innego dostawcy',
     'sameProduct'=>'Produkt już był dodany do zamówienia',
     'addedProductToCart'=>'Produkt został dodany do zamówienia',
-    'notAddedProductToCart'=>'BŁĄD, produkt nie został dodany do zamówienia'
+    'notAddedProductToCart'=>'BŁĄD Bazy, produkt nie został dodany do zamówienia'
 
 
 ];
